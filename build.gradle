@@ -75,6 +75,12 @@ repositories {
     maven { url "https://plugins.gradle.org/m2/" }
 }
 
+dependencies {
+    implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.13.38'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.16.1'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
+}
+
 test {
     include '**/*Tests.class'
 }

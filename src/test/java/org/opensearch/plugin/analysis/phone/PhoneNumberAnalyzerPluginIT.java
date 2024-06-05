@@ -11,7 +11,6 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
 import org.opensearch.client.Request;
-import org.opensearch.client.Response;
 import org.opensearch.plugins.Plugin;
 import org.opensearch.test.OpenSearchIntegTestCase;
 
@@ -32,10 +31,11 @@ public class PhoneNumberAnalyzerPluginIT extends OpenSearchIntegTestCase {
     }
 
     public void testPluginInstalled() throws IOException, ParseException {
-        Response response = getRestClient().performRequest(new Request("GET", "/_cat/plugins"));
-        String body = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+        final var response = getRestClient().performRequest(new Request("GET", "/_cat/plugins"));
+        final var body = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 
         logger.info("response body: {}", body);
         assertThat(body, containsString("phone-number-analyzer"));
     }
+
 }

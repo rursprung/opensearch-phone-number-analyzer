@@ -1,0 +1,14 @@
+{
+  "index": {
+    "analysis": {
+      "analyzer": {
+        "phone": {
+          "type": "phone"
+        },
+        "phone-search": {
+          "type": "phone-search"
+        }
+      }
+    }
+  }
+}
