@@ -192,6 +192,24 @@ public class PhoneNumberAnalyzerTests extends OpenSearchTokenStreamTestCase {
         assertTokensInclude(phoneCHAnalyzer, "0583161010", Arrays.asList("41", "41583161010", "583161010"));
     }
 
+    public void testSearchInternationalPrefixWithZZ() throws IOException {
+        assertTokensInclude(phoneSearchAnalyzer, "+41583161010", Arrays.asList("41", "41583161010", "583161010"));
+    }
+
+    public void testSearchInternationalPrefixWithCH() throws IOException {
+        assertTokensInclude(phoneSearchCHAnalyzer, "+41583161010", Arrays.asList("41", "41583161010", "583161010"));
+    }
+
+    public void testSearchNationalPrefixWithCH() throws IOException {
+        // + is equivalent to 00 in Switzerland
+        assertTokensInclude(phoneSearchCHAnalyzer, "0041583161010", Arrays.asList("41", "41583161010", "583161010"));
+    }
+
+    public void testSearchLocalNumberWithCH() throws IOException {
+        // when omitting the international prefix swiss numbers must start with '0'
+        assertTokensInclude(phoneSearchCHAnalyzer, "0583161010", Arrays.asList("41", "41583161010", "583161010"));
+    }
+
     /**
      * Unlike {@link #assertTokenStreamContents(TokenStream, String[])} this only asserts whether the generated tokens
      * contain the required ones but does not check for completeness or order.

@@ -101,6 +101,7 @@ public final class PhoneNumberTermTokenizer extends Tokenizer {
 
                 // Add Country code, extension, and the number as tokens
                 tokens.add(countryCode.get());
+                tokens.add(countryCode.get() + input);
                 if (!StringUtils.isEmpty(numberProto.getExtension())) {
                     tokens.add(numberProto.getExtension());
                 }
