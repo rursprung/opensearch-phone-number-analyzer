@@ -189,6 +189,7 @@ public class PhoneNumberAnalyzerTests extends OpenSearchTokenStreamTestCase {
         while (ts.incrementToken()) {
             tokens.add(termAtt.toString());
         }
+        ts.end();
         ts.close();
         return tokens;
     }
