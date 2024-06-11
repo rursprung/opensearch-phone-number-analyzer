@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.opensearch.common.settings.Settings;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,15 +27,18 @@ import java.util.Optional;
  */
 public final class PhoneNumberTermTokenizer extends Tokenizer {
     private final boolean addNgrams;
+    private final Settings settings;
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private Iterator<String> tokenIterator;
 
     /**
      * @param addNgrams defines whether ngrams for the phone number should be added. Set to true for indexing and false for search.
+     * @param settings the settings for the analyzer.
      */
-    public PhoneNumberTermTokenizer(final boolean addNgrams) {
+    public PhoneNumberTermTokenizer(final Settings settings, final boolean addNgrams) {
         super();
         this.addNgrams = addNgrams;
+        this.settings = settings;
     }
 
     @Override
@@ -88,7 +92,8 @@ public final class PhoneNumberTermTokenizer extends Tokenizer {
         Optional<String> countryCode = Optional.empty();
         try {
             // ZZ is the generic "I don't know the country code" region. Google's libphone library will try to infer it.
-            final var numberProto = phoneUtil.parse(input, "ZZ");
+            final var region = this.settings.get("phone-region", "ZZ");
+            final var numberProto = phoneUtil.parse(input, region);
             if (numberProto != null) {
                 // Libphone likes it!
                 countryCode = Optional.of(String.valueOf(numberProto.getCountryCode()));

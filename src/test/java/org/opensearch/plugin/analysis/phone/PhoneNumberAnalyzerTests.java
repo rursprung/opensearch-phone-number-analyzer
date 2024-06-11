@@ -31,6 +31,8 @@ public class PhoneNumberAnalyzerTests extends OpenSearchTokenStreamTestCase {
 
     private static Analyzer phoneAnalyzer;
     private static Analyzer phoneSearchAnalyzer;
+    private static Analyzer phoneCHAnalyzer;
+    private static Analyzer phoneSearchCHAnalyzer;
 
     @BeforeClass
     public static void beforeClass() throws IOException {
@@ -46,6 +48,8 @@ public class PhoneNumberAnalyzerTests extends OpenSearchTokenStreamTestCase {
         );
         phoneAnalyzer = analysis.indexAnalyzers.get("phone");
         phoneSearchAnalyzer = analysis.indexAnalyzers.get("phone-search");
+        phoneCHAnalyzer = analysis.indexAnalyzers.get("phone-ch");
+        phoneSearchCHAnalyzer = analysis.indexAnalyzers.get("phone-search-ch");
     }
 
     /**
@@ -170,16 +174,43 @@ public class PhoneNumberAnalyzerTests extends OpenSearchTokenStreamTestCase {
         assertTokensInclude("+1228", Arrays.asList("1228", "122", "228"));
     }
 
+    public void testInternationalPrefixWithZZ() throws IOException {
+        assertTokensInclude(phoneAnalyzer, "+41583161010", Arrays.asList("41", "41583161010", "583161010"));
+    }
+
+    public void testInternationalPrefixWithCH() throws IOException {
+        assertTokensInclude(phoneCHAnalyzer, "+41583161010", Arrays.asList("41", "41583161010", "583161010"));
+    }
+
+    public void testNationalPrefixWithCH() throws IOException {
+        // + is equivalent to 00 in Switzerland
+        assertTokensInclude(phoneCHAnalyzer, "0041583161010", Arrays.asList("41", "41583161010", "583161010"));
+    }
+
+    public void testLocalNumberWithCH() throws IOException {
+        // when omitting the international prefix swiss numbers must start with '0'
+        assertTokensInclude(phoneCHAnalyzer, "0583161010", Arrays.asList("41", "41583161010", "583161010"));
+    }
+
     /**
      * Unlike {@link #assertTokenStreamContents(TokenStream, String[])} this only asserts whether the generated tokens
      * contain the required ones but does not check for completeness or order.
      */
-    private void assertTokensInclude(final String input, final List<String> expectedTokens) throws IOException {
-        final var ts = phoneAnalyzer.tokenStream("test", input);
+    private void assertTokensInclude(final Analyzer analyzer, final String input, final List<String> expectedTokens) throws IOException {
+        final var ts = analyzer.tokenStream("test", input);
         final var allTokens = getAllTokens(ts).toArray();
         for (final var expectedToken : expectedTokens) {
             assertThat(allTokens, hasItemInArray(expectedToken));
         }
+    }
+
+    /**
+     * Unlike {@link #assertTokenStreamContents(TokenStream, String[])} this only asserts whether the generated tokens
+     * contain the required ones but does not check for completeness or order.
+     * This uses {@link #phoneAnalyzer}.
+     */
+    private void assertTokensInclude(final String input, final List<String> expectedTokens) throws IOException {
+        this.assertTokensInclude(phoneAnalyzer, input, expectedTokens);
     }
 
     private List<String> getAllTokens(final TokenStream ts) throws IOException {

@@ -8,9 +8,7 @@
 package org.opensearch.plugin.analysis.phone;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.Tokenizer;
 import org.opensearch.index.analysis.AnalyzerProvider;
-import org.opensearch.index.analysis.AnalyzerScope;
 import org.opensearch.index.analysis.TokenizerFactory;
 import org.opensearch.indices.analysis.AnalysisModule;
 import org.opensearch.plugins.AnalysisPlugin;
@@ -27,63 +25,16 @@ public class PhoneNumberAnalyzerPlugin extends Plugin implements AnalysisPlugin 
 
     public Map<String, AnalysisModule.AnalysisProvider<AnalyzerProvider<? extends Analyzer>>> getAnalyzers() {
         return Map.of(
-                "phone", (indexSettings, environment, name, settings) -> new AnalyzerProvider<>() {
-                    @Override
-                    public String name() {
-                        return "phone";
-                    }
-
-                    @Override
-                    public AnalyzerScope scope() {
-                        return AnalyzerScope.GLOBAL;
-                    }
-
-                    @Override
-                    public Analyzer get() {
-                        return new PhoneNumberAnalyzer(true);
-                    }
-                },
-                "phone-search", (indexSettings, environment, name, settings) -> new AnalyzerProvider<>() {
-                    @Override
-                    public String name() {
-                        return "phone-search";
-                    }
-
-                    @Override
-                    public AnalyzerScope scope() {
-                        return AnalyzerScope.GLOBAL;
-                    }
-
-                    @Override
-                    public Analyzer get() {
-                        return new PhoneNumberAnalyzer(false);
-                    }
-                });
+                "phone", (indexSettings, environment, name, settings) -> new PhoneNumberAnalyzerProvider(indexSettings, "phone", settings, true),
+                "phone-search", (indexSettings, environment, name, settings) -> new PhoneNumberAnalyzerProvider(indexSettings, "phone-search", settings, false)
+        );
     }
 
     @Override
     public Map<String, AnalysisModule.AnalysisProvider<TokenizerFactory>> getTokenizers() {
-        return Map.of("phone", (indexSettings, environment, name, settings) -> new TokenizerFactory() {
-                    @Override
-                    public String name() {
-                        return "phone";
-                    }
-
-                    @Override
-                    public Tokenizer create() {
-                        return new PhoneNumberTermTokenizer(true);
-                    }
-                },
-                "phone-search", (indexSettings, environment, name, settings) -> new TokenizerFactory() {
-                    @Override
-                    public String name() {
-                        return "phone-search";
-                    }
-
-                    @Override
-                    public Tokenizer create() {
-                        return new PhoneNumberTermTokenizer(false);
-                    }
-                });
+        return Map.of(
+                "phone", (indexSettings, environment, name, settings) -> new PhoneNumberTermTokenizerFactory(indexSettings, settings, "phone", true),
+                "phone-search", (indexSettings, environment, name, settings) -> new PhoneNumberTermTokenizerFactory(indexSettings, settings, "phone-search", false)
+        );
     }
 }
