@@ -56,32 +56,29 @@ public class PhoneNumberAnalyzerTests extends OpenSearchTokenStreamTestCase {
      * Test for all tokens which are emitted by the "phone" analyzer.
      */
     public void testEuropeDetailled() throws IOException {
-        assertTokenStreamContents(phoneAnalyzer.tokenStream("test", "tel:+441344840400"), new String[]{
-                "tel:+441344840400",
-                "tel:",
-                "441344840400",
-                "44",
-                "1344840400",
-                "1",
-                "441",
+        assertTokenStreamContents(phoneAnalyzer.tokenStream("test", "tel:+441344840400"), new String[]{"44",
                 "13",
-                "4413",
-                "134",
-                "44134",
-                "1344",
-                "441344",
-                "13448",
-                "4413448",
-                "134484",
-                "44134484",
-                "1344840",
                 "441344840",
+                "44134",
                 "13448404",
-                "4413448404",
+                "tel:",
                 "134484040",
                 "44134484040",
+                "441344",
+                "1",
+                "441",
+                "134",
+                "1344",
                 "1344840400",
+                "tel:+441344840400",
+                "4413448404",
+                "4413",
+                "134484",
+                "44134484",
                 "441344840400",
+                "13448",
+                "4413448",
+                "1344840",
         });
     }
 
@@ -90,11 +87,11 @@ public class PhoneNumberAnalyzerTests extends OpenSearchTokenStreamTestCase {
      */
     public void testEuropeDetailledSearch() throws IOException {
         assertTokenStreamContents(phoneSearchAnalyzer.tokenStream("test", "tel:+441344840400"), new String[]{
+                "44",
+                "1344840400",
                 "tel:+441344840400",
                 "tel:",
                 "441344840400",
-                "44",
-                "1344840400",
         });
     }
 

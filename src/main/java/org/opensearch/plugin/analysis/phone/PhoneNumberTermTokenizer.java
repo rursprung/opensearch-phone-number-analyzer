@@ -17,10 +17,10 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.opensearch.common.settings.Settings;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * This tokenizes a phone number into its individual parts, using {@link PhoneNumberUtil}.
@@ -60,8 +60,8 @@ public final class PhoneNumberTermTokenizer extends Tokenizer {
         return false;
     }
 
-    private List<String> getTokens() throws IOException {
-        final var tokens = new ArrayList<String>();
+    private Set<String> getTokens() throws IOException {
+        final var tokens = new HashSet<String>();
 
         var input = IOUtils.toString(this.input);
 

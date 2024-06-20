@@ -30,7 +30,6 @@ public class PhoneNumberAnalyzer extends Analyzer {
     @Override
     protected TokenStreamComponents createComponents(String fieldName) {
         final Tokenizer tokenizer = new PhoneNumberTermTokenizer(this.settings, this.addNgrams);
-        // TODO: UniqueTokenFilter
         return new Analyzer.TokenStreamComponents(tokenizer, tokenizer);
     }
 }
